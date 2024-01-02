@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "numerictextfield",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/josephlevy222/NumericTextField.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d41e64fbf42ea554400b546f0abca2293f3992ae"
+      }
+    },
+    {
+      "identity" : "richtexteditor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/josephlevy222/RichTextEditor.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9686493023fa7f659b171f4d30e57a303d4260c7"
+      }
+    },
+    {
+      "identity" : "utilities",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/josephlevy222/Utilities.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "373c226df19a9f47129923a010da85153570b5c3"
+      }
+    },
+    {
+      "identity" : "viewextractor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GeorgeElsham/ViewExtractor.git",
+      "state" : {
+        "revision" : "e20b1944524d4454c2a65c0054ce345c2c5d0185",
+        "version" : "2.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}
