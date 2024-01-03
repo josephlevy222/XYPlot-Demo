@@ -5,7 +5,6 @@
 //  Created by Joseph Levy on 12/22/23.
 //
 
-
 import SwiftUI
 
 /// Axis Parameters is an x, y or secondary (s) axis extent, tics, and tile
@@ -96,8 +95,6 @@ public extension PlotPoint { /// Makes x: and y: designation unnecessary
 	init(_ x: Double, _ y: Double, label: String? = nil) { self.x = x; self.y = y; self.label = label }
 }
 
-import CoreData
-import Combine
 /// Make Codable version of StrokeStyle
 public struct LineStyle: Equatable, Codable {
 	var lineWidth: CGFloat /// The width of the stroked path.
@@ -114,13 +111,12 @@ public struct LineStyle: Equatable, Codable {
 	}
 	
 	public init(strokeStyle: StrokeStyle) {
-		let from = strokeStyle
-		self.lineWidth = from.lineWidth
-		self.lineCap = from.lineCap.rawValue
-		self.miterLimit = from.miterLimit
-		self.lineJoin = from.lineJoin.rawValue
-		self.dash = from.dash
-		self.dashPhase = from.dashPhase
+		self.lineWidth = strokeStyle.lineWidth
+		self.lineCap = strokeStyle.lineCap.rawValue
+		self.miterLimit = strokeStyle.miterLimit
+		self.lineJoin = strokeStyle.lineJoin.rawValue
+		self.dash = strokeStyle.dash
+		self.dashPhase = strokeStyle.dashPhase
 	}
 }
 
@@ -133,8 +129,8 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 	}
 	
 	public var values: [PlotPoint]
-	       var lineColorInt : Int/*Color*/
-	       var lineStyleCodable: LineStyle
+	       var lineColorInt : Int/*Color codable substitute*/
+	       var lineStyleCodable: LineStyle /*StrokeStyle codable substitute*/
 	public var pointShape: ShapeParameters
 	public var secondary: Bool
 	public var legend: String?
@@ -156,7 +152,6 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 	///   - secondary: true if line should use secondary (right-side) axis
 	///   - legend: optional String of line name;
 	///
-	
 	public init(values: [PlotPoint] = [],
 				lineColor: Color = .black,
 				lineStyle: StrokeStyle = StrokeStyle(lineWidth: 2),
@@ -188,6 +183,17 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 	}
 }
 
+/// PlotData is the info needed for XYPlot to display a plot
+/// - Parameters:
+///   - plotLines: PlotLine array of the lines to plot
+///   - plotSettings: scaling, tics, and titles of plot
+///   - plotName: String that is unique to this data set
+///   Methods:
+///   - saveToUserDefaults(): Saves to UserDefaults with key in plotName
+///   - readFromUserDefaults(_ plotName: String)  // Retrieves from key plotname and returns PlotData with that plotName set
+///   - scaleAxes(): Adjusts settings to make plot fix in axes if autoscale is true
+///   - axesScale(): Adjust setting to make plot fit in axes (regardlless of autoScale)
+///
 public struct PlotData : Equatable, Codable {
 	
 	public var plotLines: [PlotLine]
@@ -236,16 +242,6 @@ public struct PlotData : Equatable, Codable {
 		get { plotLines[position] }
 		set(newValue) { plotLines[position] = newValue }
 	}
-	
-	/// PlotData is the info needed for XYPlot to display a plot
-	/// - Parameters:
-	///   - plotLines: PlotLine array of the lines to plot
-	///   - plotSettings: scaling, tics, and titles of plot
-	///   - plotName: String that is unique to this data set
-	///   Methods:
-	///   - scaleAxes(): Adjusts settings to make plot fix in axes if autoscale is true
-	///   - axesScale(): Adjust setting to make plot fit in axes (regardlless of autoScale)
-	///
 	
 	var hasPrimaryLines : Bool { plotLines.reduce(false, { $0 || !$1.secondary })}
 	var hasSecondaryLines : Bool { plotLines.reduce(false, { $0 || $1.secondary})}

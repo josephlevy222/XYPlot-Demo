@@ -1,5 +1,6 @@
 //
 //  Debounce.swift
+//  XYPlot
 //
 //  Created by Joseph Levy on 7/11/22.
 //  Based on https://github.com/Tunous/DebouncedOnChange

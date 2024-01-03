@@ -164,13 +164,18 @@ public struct PlotLineDialog: View {
                 let plotLine : PlotLine = plotData.plotLines[self.i]
                 lineName =  plotLine.legend ?? "Trace \(self.i)"
                 useSecondary = plotLine.secondary
-                if plotLine.lineColor == .clear { lineOff = true; savedLineColor = (plotLine.pointColor == .clear ? .black : plotLine.pointColor) }  else { lineOff = false }
-                if plotLine.pointColor == .clear { pointOff = true; savedPointColor = (plotLine.lineColor == .clear ? .black : plotLine.lineColor) } else { pointOff = false }
+                if plotLine.lineColor == .clear { 
+					lineOff = true;
+					savedLineColor = (plotLine.pointColor == .clear ? .black : plotLine.pointColor) }  else { lineOff = false }
+                if plotLine.pointColor == .clear { 
+					pointOff = true;
+					savedPointColor = (plotLine.lineColor == .clear ? .black : plotLine.lineColor) } else { pointOff = false }
                 lineColor = plotLine.lineColor
                 pointColor = plotLine.pointColor
                 lineWidth = plotLine.lineStyle.lineWidth
                 lineStyle = lineStyles.firstIndex(of: plotLine.lineStyle.dash ) ?? 0
-                pointStyle = symbolShapes.firstIndex(of: ShapeParameters(path: plotLine.pointShape.path, angle: plotLine.pointShape.angle)) ?? -1
+                pointStyle = symbolShapes.firstIndex(of: ShapeParameters(path: plotLine.pointShape.path, 
+																		 angle: plotLine.pointShape.angle)) ?? -1
                 if pointStyle == -1 {
                     symbolShapes.append(ShapeParameters(path: plotLine.pointShape.path, angle: plotLine.pointShape.angle))
                     print("Adding shape to symbolShapes")
