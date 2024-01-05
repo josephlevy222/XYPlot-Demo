@@ -41,11 +41,11 @@ public struct LegendView: View {
                                     ZStack {
                                         Path { path in path.move(to: .zero); path.addLine(to: CGPoint(x: 50, y: 0))}
                                             .stroke(lines[i].lineColor, style: lines[i].lineStyle)
-#if os(iOS) && !targetEnvironment(macCatalyst)
+											#if os(iOS) && !targetEnvironment(macCatalyst)
                                             .frame(width: 50, height: 0.5) // height 0.5 makes the line centered on the points !?
-#else
+											#else
                                             .frame(width: 50, height: 1.0) // need at least 1.0 for macOS
-#endif
+											#endif
                                         ShapeView(shape: lines[i].pointShape)
                                             .offset(x: -10.0, y: 0).frame(height: 1)
                                         ShapeView(shape: lines[i].pointShape).frame(height: 1)

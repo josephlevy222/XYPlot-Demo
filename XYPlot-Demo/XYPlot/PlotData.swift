@@ -9,6 +9,7 @@ import SwiftUI
 
 /// Axis Parameters is an x, y or secondary (s) axis extent, tics, and tile
 public struct AxisParameters : Equatable, Codable  {
+	
 	public init(min: Double = 0.0, max: Double = 1.0, majorTics: Int = 10,
 				minorTics: Int = 5, title: AttributedString = AttributedString(), show: Bool = true) {
 		self.min = min
@@ -34,7 +35,7 @@ public struct PlotSettings : Equatable, Codable  {
 	public var xAxis : AxisParameters?
 	public var yAxis : AxisParameters?
 	public var sAxis : AxisParameters?
-	
+
 	// Computed properties for minimizing code changes when adding title to AxisParameters
 	public var xTitle : AttributedString { get { xAxis?.title ?? AttributedString()}
 		set { xAxis?.title = newValue.convertToNSFonts } }
@@ -55,8 +56,7 @@ public struct PlotSettings : Equatable, Codable  {
 	public init(title: AttributedString = .init(), xAxis: AxisParameters? = nil, yAxis: AxisParameters? = nil,
 				sAxis: AxisParameters? = nil, sizeMinor: Double = 0.005, sizeMajor: Double = 0.01,
 				format: String = "%g", showSecondaryAxis: Bool = false, autoScale: Bool = true,
-				independentTics: Bool = false, legendPos: CGPoint = .zero, legend: Bool = true, selection: Int? = nil ,
-				coreDataManager: PlotData.CoreDataManager? = nil) {
+				independentTics: Bool = false, legendPos: CGPoint = .zero, legend: Bool = true, selection: Int? = nil ) {
 		self.title = title.convertToNSFonts
 		self.xAxis = xAxis
 		self.yAxis = yAxis
@@ -95,33 +95,39 @@ public extension PlotPoint { /// Makes x: and y: designation unnecessary
 	init(_ x: Double, _ y: Double, label: String? = nil) { self.x = x; self.y = y; self.label = label }
 }
 
-/// Make Codable version of StrokeStyle
-public struct LineStyle: Equatable, Codable {
-	var lineWidth: CGFloat /// The width of the stroked path.
-	var lineCap: Int32/*CGLineCap*/ /// The endpoint style of a line.
-	var lineJoin: Int32/*CGLineJoin*/ /// The join type of a line.
-	var miterLimit: CGFloat /// A threshold used to determine whether to use a bevel instead of a miter at a join.
-	var dash: [CGFloat] /// The lengths of painted and unpainted segments used to make a dashed line.
-	var dashPhase: CGFloat /// How far into the dash pattern the line starts.
+/// Make  StrokeStyle Codable
+extension StrokeStyle: Codable {
 	
-	public var strokeStyle: StrokeStyle {
-		 StrokeStyle(lineWidth: lineWidth, lineCap: CGLineCap(rawValue: lineCap) ?? .butt,
-					lineJoin: CGLineJoin(rawValue: lineJoin) ?? .miter, miterLimit: miterLimit,
-					dash: dash, dashPhase: dashPhase)
+	enum CodingKeys : CodingKey {
+		case lineWidth, lineCap, lineJoin, miterLimit, dash, dashPhase
 	}
 	
-	public init(strokeStyle: StrokeStyle) {
-		self.lineWidth = strokeStyle.lineWidth
-		self.lineCap = strokeStyle.lineCap.rawValue
-		self.miterLimit = strokeStyle.miterLimit
-		self.lineJoin = strokeStyle.lineJoin.rawValue
-		self.dash = strokeStyle.dash
-		self.dashPhase = strokeStyle.dashPhase
+	public init(from decoder: Decoder) throws {
+		let values = try decoder.container(keyedBy: CodingKeys.self)
+		self.init( lineWidth:  try values.decode(CGFloat.self, forKey: .lineWidth),
+				   lineCap:    CGLineCap(rawValue: try values.decode(Int32.self, forKey: .lineCap)) ?? .butt,
+				   lineJoin:   CGLineJoin(rawValue: try values.decode(Int32.self, forKey: .lineJoin)) ?? .miter,
+				   miterLimit: try values.decode(CGFloat.self, forKey: .miterLimit),
+				   dash:       try values.decode([CGFloat].self, forKey: .dash),
+				   dashPhase:  try values.decode(CGFloat.self, forKey: .dashPhase) )
+	}
+	
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		do {
+			try container.encode(lineWidth, forKey: .lineWidth)
+			try container.encode(lineCap.rawValue, forKey: .lineCap)
+			try container.encode(lineJoin.rawValue, forKey: .lineJoin)
+			try container.encode(miterLimit, forKey: .miterLimit)
+			try container.encode(dash, forKey: .dash)
+			try container.encode(dashPhase, forKey: .dashPhase)
+		} catch (let error) { print(error.localizedDescription) }
 	}
 }
 
 /// PlotLine array is used by PlotData to define multiple  lines
 public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, Codable {
+	
 	public static func == (lhs: PlotLine, rhs: PlotLine) -> Bool {
 		lhs.values == rhs.values && lhs.lineColorInt == rhs.lineColorInt &&
 		lhs.lineStyle == rhs.lineStyle && lhs.secondary == rhs.secondary &&
@@ -130,22 +136,19 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 	
 	public var values: [PlotPoint]
 	       var lineColorInt : Int/*Color codable substitute*/
-	       var lineStyleCodable: LineStyle /*StrokeStyle codable substitute*/
-	public var pointShape: ShapeParameters
-	public var secondary: Bool
-	public var legend: String?
-	public var pointColor: Color { pointShape.color } // added to ShapeParameters
 	public var lineColor: Color {
 		get { Color(sARGB: lineColorInt)}
 		set { lineColorInt = newValue.sARGB }
 	}
-	public var lineStyle: StrokeStyle {
-		get { lineStyleCodable.strokeStyle }
-		set { lineStyleCodable = LineStyle(strokeStyle: newValue)}
-	}
+	public var lineStyle: StrokeStyle
+	public var pointShape: ShapeParameters
+	public var secondary: Bool
+	public var legend: String?
+	public var pointColor: Color { pointShape.color } // added to ShapeParameters
+
 	/// - Parameters:
 	///   - values: PlotPoint array of line
-	///   - lineColorInt: line color sARGB
+	///   - lineColor: line color 
 	///   - lineStyle: line style
 	///   - pointColor: point symbol color
 	///   - pointShape: point symbol from ShapeParameters
@@ -158,11 +161,10 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 				pointColor: Color = .clear,
 				pointShape: ShapeParameters = .init(),
 				secondary: Bool = false,
-				legend: String? = nil,
-				coreDataManager: PlotData.CoreDataManager? = nil) {
+				legend: String? = nil) {
 		self.values = values
 		self.lineColorInt = lineColor.sARGB
-		self.lineStyleCodable = LineStyle(strokeStyle: lineStyle)
+		self.lineStyle = lineStyle
 		self.pointShape = pointShape
 		self.secondary = secondary
 		self.legend = legend
@@ -193,7 +195,6 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 ///   - readFromUserDefaults(_ plotName: String)  // Retrieves from key plotname and returns PlotData with that plotName set
 ///   - scaleAxes(): Adjusts settings to make plot fix in axes if autoscale is true
 ///   - axesScale(): Adjust setting to make plot fit in axes (regardlless of autoScale)
-///
 public struct PlotData : Equatable, Codable {
 	
 	public var plotLines: [PlotLine]
@@ -204,29 +205,28 @@ public struct PlotData : Equatable, Codable {
 		self.settings = settings
 		if let plotName {
 			self.plotName = plotName
-		} else { print("plotName is nil")}
+		} 
 	}
 	
 	func saveToUserDefaults() {
 		guard let plotName else { return }
 		let encoder = JSONEncoder()
 		if let data = try? encoder.encode(self) {
-			print("Saving to UserDefaults: \(plotName)")
+			debugPrint("Saving to UserDefaults: \(plotName)")
 			UserDefaults.standard.set(data, forKey: plotName)
-		} else { print("Could not save to UserDefaults")}
+		} else { debugPrint("Could not save to UserDefaults")}
 	}
 	
 	func readFromUserDefaults(_ plotName: String) -> PlotData {
 		let decoder = JSONDecoder()
 		if let data = UserDefaults.standard.data(forKey: plotName),
 		   var plotData = try? decoder.decode(PlotData.self, from: data) {
-			print("Read from UserDefaults: \(plotName)")
 			plotData.plotName = plotName
 			return plotData
 		}
-		return self
+		return PlotData(plotLines: plotLines, settings: settings, plotName: plotName)
 	}
-
+	
 	static public func == (lhs: PlotData, rhs: PlotData) -> Bool {
 		var equal = rhs.plotLines.count == lhs.plotLines.count && lhs.settings == rhs.settings
 		if equal {

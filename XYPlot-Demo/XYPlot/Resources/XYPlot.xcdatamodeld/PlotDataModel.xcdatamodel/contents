@@ -13,7 +13,7 @@
             <entry key="y" value="1"/>
         </userInfo>
     </entity>
-    <entity name="Line" representedClassName="Line" syncable="YES">
+    <entity name="Line" representedClassName="Line" syncable="YES" codeGenerationType="class">
         <attribute name="dash" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformer" customClassName="[CGFloat]"/>
         <attribute name="dashPhase" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="lineCap" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
@@ -34,7 +34,7 @@
             <fetchRequest name="fetchedPropertyFetchRequest" entity="Line"/>
         </fetchedProperty>
     </entity>
-    <entity name="Settings" representedClassName="Settings" syncable="YES">
+    <entity name="Settings" representedClassName="Settings" syncable="YES" codeGenerationType="class">
         <attribute name="autoScale" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="format" optional="YES" attributeType="String"/>
         <attribute name="independentTics" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -65,7 +65,7 @@
             <fetchRequest name="fetchedPropertyFetchRequest" entity="Settings"/>
         </fetchedProperty>
     </entity>
-    <entity name="XYPlotData" representedClassName="XYPlotData" syncable="YES">
+    <entity name="XYPlotData" representedClassName="XYPlotData" syncable="YES" codeGenerationType="class">
         <attribute name="id" attributeType="String"/>
         <relationship name="lines" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Line" inverseName="plotData" inverseEntity="Line"/>
         <relationship name="settings" maxCount="1" deletionRule="Cascade" destinationEntity="Settings" inverseName="plotData" inverseEntity="Settings"/>

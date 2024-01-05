@@ -13,6 +13,7 @@
 //  Added Coredata support and
 //  Added TextView for editing titles 7/2/23
 //  Switched to RichTextEditor for titles 11/17/23
+//  Modified to use UserDefaults rather than Coredata
 
 import SwiftUI
 import Utilities
@@ -57,16 +58,14 @@ extension View {
 
 public struct XYPlotTitle: View {
 	@Binding public var text: AttributedString
-	var coreDataManager: PlotData.CoreDataManager?
 	@State private var isPresented = false
 	@State private var textSize = CGSize.zero
 	var hideAddTitleButton = false
 	let overlayEditor: Bool
-	public init(_ text: Binding<AttributedString>, inPlaceEditing: Bool = false, hideAddTitleButton: Bool = false, coreDataManager: PlotData.CoreDataManager? = nil) {
+	public init(_ text: Binding<AttributedString>, inPlaceEditing: Bool = false, hideAddTitleButton: Bool = false) {
 		_text = text
 		overlayEditor = inPlaceEditing
 		self.hideAddTitleButton = hideAddTitleButton
-		self.coreDataManager = coreDataManager
 	}
 	private var overlayEdit : Bool { overlayEditor && text.characters.count != 0}
 	public var body: some View {
@@ -91,18 +90,6 @@ public struct XYPlotTitle: View {
 				.popover(isPresented: $isPresented) {
 					RichTextEditor( $text)
 						.frame(width: textSize.width, height: textSize.height).padding(.leading)
-						.onChange(of: text) { _ in
-							if let coreDataManager {
-								debugPrint("Text changed so save to coredata")
-								coreDataManager.save()
-							}
-						}
-				}
-				.onChange(of: text) { _ in
-					if let coreDataManager {
-						debugPrint("Text changed so save to coredata")
-						coreDataManager.save()
-					}
 				}
 		}
 	}
@@ -110,6 +97,7 @@ public struct XYPlotTitle: View {
 /// XYPlot is a view that creates an XYPlot of PlotData with optional
 public struct XYPlot: View {
 	public init(data: Binding<PlotData>) { self._data = data }
+	
 	@Binding public var data : PlotData
 	
 	@State public  var isPresented: Bool = false
@@ -150,12 +138,14 @@ public struct XYPlot: View {
 	
 	private var yLabels: [String] {
 		(0...yAxis.majorTics).map { i in
-			String(format: settings.format, zeroIfTiny(yAxis.min + (yAxis.max - yAxis.min) * Double(yAxis.majorTics - i)/Double(yAxis.majorTics))) + " " }
+			String(format: settings.format, 
+				   zeroIfTiny(yAxis.min + (yAxis.max - yAxis.min) * Double(yAxis.majorTics - i)/Double(yAxis.majorTics))) + " " }
 	}
 	
 	private var sLabels: [String] {
 		showSecondary ? (0...sAxis.majorTics).map { i in
-			" "+String(format: settings.format, zeroIfTiny(sAxis.min + (sAxis.max - sAxis.min)  * Double(sAxis.majorTics - i)/Double(sAxis.majorTics)))+" "}
+			" "+String(format: settings.format, zeroIfTiny(sAxis.min + (sAxis.max - sAxis.min)  
+														   * Double(sAxis.majorTics - i)/Double(sAxis.majorTics)))+" "}
 		: []
 	}
 	
@@ -195,7 +185,6 @@ public struct XYPlot: View {
 								Text(yLabels[i])
 									.captureHeight(in: $lastYLabelHeight)
 									.frame(height: plotAreaHeight/max(1.0,CGFloat(yAxis.majorTics)))
-								
 							}
 						}
 					}.captureWidth(in: $yLabelsWidth)
@@ -287,8 +276,10 @@ public struct XYPlot: View {
 								let position = maxmin(
 									CGPoint(x: value.translation.width + newLegendPos.x*g.size.width,
 											y: value.translation.height + newLegendPos.y*g.size.height),
-									size: CGSize(width: g.size.width-legendSize.width, height: g.size.height-legendSize.height))
-								xyLegendPos = scalePos(position, size: CGSize(width: 1.0/g.size.width, height: 1.0/g.size.height))
+									size: CGSize(width: g.size.width-legendSize.width, 
+												 height: g.size.height-legendSize.height))
+								xyLegendPos = scalePos(position,
+													   size: CGSize(width: 1.0/g.size.width, height: 1.0/g.size.height))
 							}
 							.onEnded { value in
 								newLegendPos = xyLegendPos
@@ -303,13 +294,13 @@ public struct XYPlot: View {
 						newLegendPos = oldPos
 						data.scaleAxes()
 					}
-
-			}.onChange(of: data, debounceTime: 0.3) { data in
+			}
+			.onChange(of: data, debounceTime: 0.4) { data in
 				let encoder = JSONEncoder()
 				if let name = data.plotName, let data = try? encoder.encode(data) {
-					print("Saving to UserDefaults: \"\(name)\" onChange")
+					//debugPrint("Saving to UserDefaults: ",name," onChange")
 					UserDefaults.standard.set(data, forKey: name)
-				} else { print("Could not save to UserDefaults: name = \(data.plotName ?? "nil")")}
+				} //else { debugPrint("Could not save to UserDefaults: name = \(data.plotName ?? "nil")")}
 			}
 		}// end of ZStack
 	}// End of body
@@ -437,13 +428,13 @@ struct XYPlot_Previews: PreviewProvider {
 			StatefulPreviewWrapper(testPlotLines) {
 				XYPlot(data: $0 ) }//testPlotLines ) //}
 			.frame(width: 700, height: 500).border(Color.green)
-		}//.environment(\.managedObjectContext, XYPlot.CoreDataManager.shared.persistentContainer.viewContext)
+		}
 	}
 }
 #endif
-// Some test lines
 
-var settings  = PlotSettings(
+// Some test lines
+var testSettings  = PlotSettings(
 	title: "# **Also a very very long plot title**".markdownToAttributed(),
 	xAxis: AxisParameters(title: "## Much Longer Horizontal Axis Title".markdownToAttributed()),
 	yAxis: AxisParameters(title: "## Incredibly Long Vertical Axis Title".markdownToAttributed()),
@@ -469,7 +460,7 @@ public var testPlotLines = {
 	line1.pointShape = ShapeParameters(path: Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0), color: .red)
 	line2.lineColor = .blue
 	line2.lineStyle.dash = [15,5]; line2.lineStyle.lineWidth = 2; line2.secondary = true
-	var plotData = PlotData(plotLines: [line1,line2], settings: settings)
+	var plotData = PlotData(plotLines: [line1,line2], settings: testSettings)
 	plotData.scaleAxes()
 	return plotData
 }()

@@ -4,12 +4,11 @@
 //
 //  Created by Joseph Levy on 12/8/21.
 //
-
 import SwiftUI
 import Utilities
 import NumericTextField
 
-struct fieldView : ViewModifier {
+struct fieldViewModifier : ViewModifier {
 	var disable = false
 	func body(content: Content) -> some View {
 		content
@@ -24,7 +23,7 @@ struct fieldView : ViewModifier {
 
 public extension View {
 	func fieldViewStyle(disable: Bool) -> some View {
-		modifier(fieldView(disable: disable))
+		modifier(fieldViewModifier(disable: disable))
 	}
 }
 
@@ -49,57 +48,51 @@ struct HorizontalPair : View {
 
 let intStyle = NumericStringStyle(decimalSeparator: false, negatives: false, exponent: false)
 
+struct PlotSettingsViewModel {
+	var settings: PlotSettings
+	var x : AxisStrings
+	var y : AxisStrings
+	var s : AxisStrings
+
+	struct AxisStrings {
+		var from: AxisParameters?
+		var min = String(0)
+		var max = String(1)
+		var majorTics = String(10)
+		var minorTics = String(5)
+		init(_ axis: AxisParameters?) {
+			from = axis
+			min = String(axis?.min ?? 0)
+			max = String(axis?.max ?? 1)
+			majorTics = String(axis?.majorTics ?? 10)
+			minorTics = String(axis?.minorTics ?? 5)
+		}
+		var axisParameters: AxisParameters? {
+			var from = from
+			if let x = Double(min) { from?.min = x }
+			if let x = Double(max) { from?.max = x }
+			if let tic = Int(majorTics) { from?.majorTics = tic }
+			if let tic = Int(minorTics) { from?.minorTics = tic }
+			return from
+		}
+	}
+	public init(data: PlotData) {
+		settings = data.settings
+		x = AxisStrings(settings.xAxis)
+		y = AxisStrings(settings.yAxis)
+		s = AxisStrings(settings.sAxis)
+	}
+}
+
 public struct PlotSettingsView: View {  // Not for smaller screens
-	@Environment(\.dismiss) var dismiss
-	
 	@Binding var data: PlotData
 	
-	@State private var xMin = String(0)
-	@State private var xMax = String(1)
-	@State private var xTicMajor = String(10)
-	@State private var xTicMinor = String(5)
-	@State private var yMin = String(0)
-	@State private var yMax = String(1)
-	@State private var yTicMajor = String(10)
-	@State private var yTicMinor = String(5)
-	@State private var sMin = String(0)
-	@State private var sMax = String(1)
-	@State private var sTicMajor = String(10)
-	@State private var sTicMinor = String(5)
-	@State private var autoScale = false
-	@State private var useSecondary = false
-	@State private var independentTics = false
-	@State private var showLegend = true
-	@State private var legendPos : CGPoint = .zero
+	@Environment(\.dismiss) var dismiss
+	@State private var vm : PlotSettingsViewModel
 	
-	public init(data: Binding<PlotData>) { // Because onAppear has bug
-		self._data = data
-		var settings : PlotSettings { data.wrappedValue.settings }
-		
-		_useSecondary = State(initialValue: settings.showSecondaryAxis)
-		_independentTics = State(initialValue: settings.independentTics)
-		_autoScale = State(initialValue: settings.autoScale)
-		_showLegend = State(initialValue: settings.legend )
-		_legendPos = State(initialValue: settings.legendPos )
-		
-		if let xAxis = settings.xAxis {
-			_xMin = State(initialValue: String(xAxis.min))
-			_xMax = State(initialValue: String(xAxis.max))
-			_xTicMajor = State(initialValue: String(xAxis.majorTics))
-			_xTicMinor = State(initialValue: String(xAxis.minorTics))
-		}
-		if let yAxis = settings.yAxis {
-			_yMin = State(initialValue: String(yAxis.min))
-			_yMax = State(initialValue: String(yAxis.max))
-			_yTicMajor = State(initialValue: String(yAxis.majorTics))
-			_yTicMinor = State(initialValue: String(yAxis.minorTics))
-		}
-		if let sAxis = settings.sAxis {
-			_sMin = State(initialValue: String(sAxis.min))
-			_sMax = State(initialValue: String(sAxis.max))
-			_sTicMajor = State(initialValue: String(sAxis.majorTics))
-			_sTicMinor = State(initialValue: String(sAxis.minorTics))
-		}
+	public init(data: Binding<PlotData>) {
+		_data = data
+		_vm = State(initialValue: PlotSettingsViewModel(data: data.wrappedValue))
 	}
 	
 	public var body: some View {
@@ -108,101 +101,85 @@ public struct PlotSettingsView: View {  // Not for smaller screens
 			HStack {//2
 				Spacer()//1
 				Text("Auto Scale")
-				CheckBoxView(checked: $autoScale)
+				CheckBoxView(checked: $vm.settings.autoScale)
 				Spacer()
 				Text("Use Secondary")
-				CheckBoxView(checked: $useSecondary)
-					.onChange(of: useSecondary) { isOn in
-						if autoScale { return }
+				CheckBoxView(checked: $vm.settings.showSecondaryAxis)
+					.onChange(of: vm.settings.showSecondaryAxis) { isOn in
+						if vm.settings.autoScale { return }
 						if !isOn {
-							if !independentTics {
-								var vMax = max(Double(yMax)!,Double(sMax)!)
-								var vMin = min(Double(yMin)!,Double(sMin)!)
+							if !vm.settings.independentTics {
+								var vMax = max(Double(vm.y.max)!,Double(vm.s.max)!)
+								var vMin = min(Double(vm.y.min)!,Double(vm.s.min)!)
 								let tics = adjustAxis(&vMin, &vMax)
-								yMax = String(vMax); yMin = String(vMin)
-								sMax = yMax; sMin = yMin
-								yTicMajor = String(tics.0); yTicMinor = String(tics.1)
+								vm.y.max = String(vMax); vm.y.max = String(vMin)
+								vm.s.max = vm.y.max; vm.s.min = vm.y.min
+								vm.y.majorTics = String(tics.0); vm.y.minorTics = String(tics.1)
 							}
 							else {
-								var vMax = Double(sMax)!
-								var vMin = Double(sMin)!
+								var vMax = Double(vm.s.max)!
+								var vMin = Double(vm.s.min)!
 								let tics = adjustAxis(&vMin, &vMax)
-								sMax = String(vMax); sMin = String(vMin)
-								sTicMajor = String(tics.0); sTicMinor = String(tics.1)
+								vm.s.max = String(vMax); vm.s.min = String(vMin)
+								vm.s.majorTics = String(tics.0); vm.s.minorTics = String(tics.1)
 							}
 						}
 					}
 				Spacer()
-				Text("Use Secondary Tics").foregroundColor(useSecondary ? .black : .gray)
-				CheckBoxView(checked:  $independentTics )
-					.disabled(!useSecondary).foregroundColor(useSecondary ? .black : .gray).opacity(useSecondary ? 1.0 : 0.5)
-					.onChange(of: independentTics) { isOn in
-						if autoScale { return }
-						if isOn && useSecondary {
-							var vMax = Double(sMax)!
-							var vMin = Double(sMin)!
+				Text("Use Secondary Tics").foregroundColor(vm.settings.showSecondaryAxis ? .black : .gray)
+				CheckBoxView(checked:  $vm.settings.independentTics )
+					.disabled(!vm.settings.showSecondaryAxis)
+					.foregroundColor(vm.settings.showSecondaryAxis ? .black : .gray)
+					.opacity(vm.settings.showSecondaryAxis ? 1.0 : 0.5)
+					.onChange(of: vm.settings.independentTics) { isOn in
+						if vm.settings.autoScale { return }
+						if isOn && vm.settings.showSecondaryAxis {
+							var vMax = Double(vm.s.max)!
+							var vMin = Double(vm.s.min)!
 							let tics = adjustAxis(&vMin, &vMax)
-							sMax = String(vMax); sMin = String(vMin)
-							sTicMajor = String(tics.0); sTicMinor = String(tics.1)
+							vm.s.max = String(vMax); vm.s.min = String(vMin)
+							vm.s.majorTics = String(tics.0); vm.s.minorTics = String(tics.1)
 						}
-						if isOn && !useSecondary {
-							sTicMajor = yTicMajor; sTicMinor = yTicMinor
+						if isOn && !vm.settings.showSecondaryAxis {
+							vm.s.majorTics = vm.y.majorTics
+							vm.s.minorTics = vm.y.minorTics
 						}
 					}
 				Spacer()//10
 			}.frame(width: 500)
 			
-			HorizontalPair(caption1: "Minimum x", entry1: $xMin,
-						   caption2: "Major Tics x", entry2: $xTicMajor,
-						   disable: autoScale)
-			HorizontalPair(caption1: "Maximum x", entry1: $xMax,
-						   caption2: "Minor Tics x", entry2: $xTicMinor,
-						   disable: autoScale)
-			HorizontalPair(caption1: "Minimum y", entry1: $yMin,
-						   caption2: "Major Tics y", entry2: $yTicMajor,
-						   disable: autoScale)
-			HorizontalPair(caption1: "Maximum y", entry1: $yMax,
-						   caption2: "Minor Tics y", entry2: $yTicMinor,
-						   disable: autoScale)
-			HorizontalPair(caption1: "Minimum s", entry1: $sMin,
-						   caption2: "Major Tics s", entry2: $sTicMajor,
-						   disable: autoScale || !useSecondary, disableTic: autoScale || !independentTics)
-			HorizontalPair(caption1: "Maximum s", entry1: $sMax,
-						   caption2: "Minor Tics s", entry2: $sTicMinor,
-						   disable: autoScale || !useSecondary, disableTic: autoScale || !independentTics)
-			HStack { Spacer(); Text("Show Legend"); CheckBoxView(checked: $showLegend); Spacer() }.padding(.top)
+			HorizontalPair(caption1: "Minimum x", entry1: $vm.x.min,
+						   caption2: "Major Tics x", entry2: $vm.x.majorTics,
+						   disable: vm.settings.autoScale)
+			HorizontalPair(caption1: "Maximum x", entry1: $vm.x.max,
+						   caption2: "Minor Tics x", entry2: $vm.x.minorTics,
+						   disable: vm.settings.autoScale)
+			HorizontalPair(caption1: "Minimum y", entry1: $vm.y.min,
+						   caption2: "Major Tics y", entry2: $vm.y.majorTics,
+						   disable: vm.settings.autoScale)
+			HorizontalPair(caption1: "Maximum y", entry1: $vm.y.max,
+						   caption2: "Minor Tics y", entry2: $vm.y.minorTics,
+						   disable: vm.settings.autoScale)
+			HorizontalPair(caption1: "Minimum s", entry1: $vm.s.min,
+						   caption2: "Major Tics s", entry2: $vm.s.majorTics,
+						   disable: vm.settings.autoScale || !vm.settings.showSecondaryAxis,
+						   disableTic: vm.settings.autoScale || !vm.settings.independentTics)
+			HorizontalPair(caption1: "Maximum s", entry1: $vm.s.max,
+						   caption2: "Minor Tics s", entry2: $vm.s.minorTics,
+						   disable: vm.settings.autoScale || !vm.settings.showSecondaryAxis,
+						   disableTic: vm.settings.autoScale || !vm.settings.independentTics)
+			HStack { Spacer(); Text("Show Legend"); CheckBoxView(checked: $vm.settings.legend); Spacer() }.padding(.top)
 			HStack {//9
 				Button(action: {
 					dismiss()
 				}, label: { Text("Cancel").foregroundColor(.accentColor)}).frame(width: 100).padding(.horizontal)
 				Button(action: { // Ok button
-					// Make copies of data to change since plotLines and settings
-					// need be fetched or stored to data Binding directly
-					var settings = data.settings
-					let plotLines = data.plotLines // save for later
-					
-					if let x = Double(xMin) { settings.xAxis?.min = x }
-					if let x = Double(xMax) { settings.xAxis?.max = x }
-					if let x = Double(yMin) { settings.yAxis?.min = x }
-					if let x = Double(yMax) { settings.yAxis?.max = x }
-					if let x = Double(sMin) { settings.sAxis?.min = x }
-					if let x = Double(sMax) { settings.sAxis?.max = x }
-					if let tic = Int(xTicMajor) { settings.xAxis?.majorTics = tic}
-					if let tic = Int(xTicMinor) { settings.xAxis?.minorTics = tic}
-					if let tic = Int(yTicMajor) { settings.yAxis?.majorTics = tic }
-					if let tic = Int(yTicMinor) { settings.yAxis?.minorTics = tic }
-					if let tic = Int(sTicMajor) { settings.sAxis?.majorTics = tic }
-					if let tic = Int(sTicMinor) { settings.sAxis?.minorTics = tic }
-					
-					settings.autoScale = autoScale
-					settings.showSecondaryAxis = useSecondary
-					settings.independentTics = independentTics
-					settings.legendPos = legendPos
-					settings.legend = showLegend
-					
-					data = PlotData(plotLines: plotLines, settings: settings, plotName: data.plotName)
+					vm.settings.xAxis = vm.x.axisParameters
+					vm.settings.yAxis = vm.y.axisParameters
+					vm.settings.sAxis = vm.s.axisParameters
+
+					data.settings = vm.settings
 					data.scaleAxes()
-					//settings.copyPlotSettingsToCoreData()
 					dismiss()
 				}) { Text("Ok").foregroundColor(.accentColor) }
 					.frame(width: 100).padding(.horizontal)

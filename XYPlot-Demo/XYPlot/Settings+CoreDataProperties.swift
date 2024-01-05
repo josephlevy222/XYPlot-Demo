@@ -18,41 +18,41 @@ import UIKit
 //}
 
 extension Settings {
-    
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Settings> {
-        return NSFetchRequest<Settings>(entityName: "Settings")
-    }
-    
-    @NSManaged public var independentTics: Bool
-    @NSManaged public var legendPosX: Double
-    @NSManaged public var legendPosY: Double
-    @NSManaged public var sAxisTitle: Data?
-    @NSManaged public var sMajor: Int64
-    @NSManaged public var sMinor: Int64
-    @NSManaged public var title: Data?
-    @NSManaged public var useSecondary: Bool
-    @NSManaged public var xAxisTitle: Data?
-    @NSManaged public var xMajor: Int64
-    @NSManaged public var xMax: Double
-    @NSManaged public var xMin: Double
-    @NSManaged public var xMinor: Int64
-    @NSManaged public var yAxisTitle: Data?
-    @NSManaged public var yMajor: Int64
-    @NSManaged public var yMax: Double
-    @NSManaged public var yMin: Double
-    @NSManaged public var yMinor: Int64
-    @NSManaged public var sMax: Double
-    @NSManaged public var sMin: Double
-    @NSManaged public var sizeMajor: Double
-    @NSManaged public var sizeMinor: Double
-    @NSManaged public var autoScale: Bool
-    @NSManaged public var showLegend: Bool
-    @NSManaged public var format: String?
-    @NSManaged public var plotData: XYPlotData
+	
+	@nonobjc public class func fetchRequest() -> NSFetchRequest<Settings> {
+		return NSFetchRequest<Settings>(entityName: "Settings")
+	}
+	
+	@NSManaged public var independentTics: Bool
+	@NSManaged public var legendPosX: Double
+	@NSManaged public var legendPosY: Double
+	@NSManaged public var sAxisTitle: Data?
+	@NSManaged public var sMajor: Int64
+	@NSManaged public var sMinor: Int64
+	@NSManaged public var title: Data?
+	@NSManaged public var useSecondary: Bool
+	@NSManaged public var xAxisTitle: Data?
+	@NSManaged public var xMajor: Int64
+	@NSManaged public var xMax: Double
+	@NSManaged public var xMin: Double
+	@NSManaged public var xMinor: Int64
+	@NSManaged public var yAxisTitle: Data?
+	@NSManaged public var yMajor: Int64
+	@NSManaged public var yMax: Double
+	@NSManaged public var yMin: Double
+	@NSManaged public var yMinor: Int64
+	@NSManaged public var sMax: Double
+	@NSManaged public var sMin: Double
+	@NSManaged public var sizeMajor: Double
+	@NSManaged public var sizeMinor: Double
+	@NSManaged public var autoScale: Bool
+	@NSManaged public var showLegend: Bool
+	@NSManaged public var format: String?
+	@NSManaged public var plotData: XYPlotData
 }
 
 extension Settings : Identifiable {
-    
+	
 }
 //import Combine
 //import SwiftUI
@@ -76,7 +76,7 @@ extension Settings : Identifiable {
 //
 ///// PlotSettings is used by PlotData to define axes and axes labels
 //public struct PlotSettings: Equatable { //, ObservableObject  {
-//    
+//
 //    /// Parameters
 //    ///
 //    //public var plotData: PlotData? // Owner
@@ -84,11 +84,11 @@ extension Settings : Identifiable {
 //    //public var settingsID: NSManagedObjectID? { settings?.objectID }
 //    //var store = Set<AnyCancellable>()
 //    public var title : AttributedString
-//    
+//
 //    public var xAxis : AxisParameters?
 //    public var yAxis : AxisParameters?
 //    public var sAxis : AxisParameters?
-//    
+//
 //    // Computed properties for minimizing code changes when adding title to AxisParameters
 //    public var xTitle : AttributedString { get { xAxis?.title ?? AttributedString()}
 //        set { xAxis?.title = newValue.convertToNSFonts } }
@@ -106,7 +106,7 @@ extension Settings : Identifiable {
 //	public var legendPos = CGPoint(x: 0, y: 0)
 //    public var legend = true
 //    public var selection : Int?
-//    
+//
 //    public init(title: AttributedString = .init(), xAxis: AxisParameters? = nil, yAxis: AxisParameters? = nil,
 //                sAxis: AxisParameters? = nil, sizeMinor: Double = 0.005, sizeMajor: Double = 0.01,
 //                format: String = "%g", showSecondaryAxis: Bool = false, autoScale: Bool = true,
@@ -124,7 +124,7 @@ extension Settings : Identifiable {
 //        self.legendPos = legendPos
 //        self.selection = selection
 //    }
-//    
+//
 //    public init(settings: Settings) {
 //        self.settings = settings
 //        title = decodeToAttributedString(settings.title)
@@ -141,20 +141,20 @@ extension Settings : Identifiable {
 //        legend = settings.showLegend
 //        setPublisherActions(settings)
 //    }
-//    
+//
 //    func onChange<Value>(of: Published<Value>.Publisher, debounce: TimeInterval = 0.0, action: @escaping (Published<Value>.Publisher.Output) -> Void  ) where Value: Equatable {
 //        of
 //            .debounce(for: .seconds(debounce), scheduler: RunLoop.main)
 //            .removeDuplicates()
-//            .sink { 
+//            .sink {
 //                action($0)
 //                print("Trying to save ...", terminator: " ")
 //				PlotData.coreDataManager.save() }
 //            .store(in: &store)
 //    }
-    
+
 //    func setPublisherActions(_ settings: Settings?) {
-//        guard let settings else { 
+//        guard let settings else {
 //            print("settings is nil, no publisher actions setup");return }
 //        print("Setting up publishers")
 //        onChange(of: $title) { settings.title = $0.data }
@@ -181,6 +181,7 @@ extension Settings : Identifiable {
 //        onChange(of: $legend) { settings.showLegend = $0 }
 //    }
 //}
+
 
 
 

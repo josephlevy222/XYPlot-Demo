@@ -8,51 +8,38 @@
 
 /* Begin PBXBuildFile section */
 		37105E4B2B23CB5D009FC89F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37105E342B23CB5D009FC89F /* Assets.xcassets */; };
-		37105E4D2B23CB5D009FC89F /* XYPlotData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E382B23CB5D009FC89F /* XYPlotData+CoreDataProperties.swift */; };
 		37105E4E2B23CB5D009FC89F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 37105E3A2B23CB5D009FC89F /* Localizable.strings */; };
 		37105E4F2B23CB5D009FC89F /* XYPlot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 37105E3B2B23CB5D009FC89F /* XYPlot.xcdatamodeld */; };
 		37105E512B23CB5D009FC89F /* PlotLineDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E3E2B23CB5D009FC89F /* PlotLineDialog.swift */; };
-		37105E532B23CB5D009FC89F /* XYPlotData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E402B23CB5D009FC89F /* XYPlotData+CoreDataClass.swift */; };
 		37105E572B23CB5D009FC89F /* AdjustAxis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E442B23CB5D009FC89F /* AdjustAxis.swift */; };
 		37105E582B23CB5D009FC89F /* XYPlotCoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E452B23CB5D009FC89F /* XYPlotCoreDataManager.swift */; };
-		37105E5B2B23CB5D009FC89F /* Settings+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E482B23CB5D009FC89F /* Settings+CoreDataProperties.swift */; };
 		372C47192B17C8830084BB21 /* Utilities in Frameworks */ = {isa = PBXBuildFile; productRef = 372C47182B17C8830084BB21 /* Utilities */; };
 		372C471C2B17C9040084BB21 /* NumericTextField in Frameworks */ = {isa = PBXBuildFile; productRef = 372C471B2B17C9040084BB21 /* NumericTextField */; };
 		372C471F2B17C9310084BB21 /* RichTextEditor in Frameworks */ = {isa = PBXBuildFile; productRef = 372C471E2B17C9310084BB21 /* RichTextEditor */; };
 		3735DFE82B10392D00098F82 /* XYPlot_DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3735DFE72B10392D00098F82 /* XYPlot_DemoApp.swift */; };
 		3735DFEF2B10393000098F82 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3735DFEE2B10393000098F82 /* Preview Assets.xcassets */; };
 		373CE8B72B3615FC00BDF580 /* PlotData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 373CE8B62B3615FC00BDF580 /* PlotData.swift */; };
-		373CE8B82B36239100BDF580 /* Settings+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E432B23CB5D009FC89F /* Settings+CoreDataClass.swift */; };
 		373CE8B92B3623BE00BDF580 /* LegendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E3D2B23CB5D009FC89F /* LegendView.swift */; };
-		373CE8BA2B3623D400BDF580 /* Line+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E462B23CB5D009FC89F /* Line+CoreDataClass.swift */; };
-		373CE8BB2B3623E400BDF580 /* Line+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E422B23CB5D009FC89F /* Line+CoreDataProperties.swift */; };
 		373CE8BC2B3623F900BDF580 /* PlotPointShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E472B23CB5D009FC89F /* PlotPointShapes.swift */; };
 		373CE8BD2B36241600BDF580 /* XYPlot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E3F2B23CB5D009FC89F /* XYPlot.swift */; };
 		373CE8BE2B36242200BDF580 /* PlotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E412B23CB5D009FC89F /* PlotSettingsView.swift */; };
 		374C14B12B44CE5600883A35 /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374C14B02B44CE5600883A35 /* Debounce.swift */; };
 		37BE467F2B39240100BB6D5E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3735DFE92B10392D00098F82 /* ContentView.swift */; };
-		37ED195E2B44D4D800A7CAFF /* ViewExtractor in Frameworks */ = {isa = PBXBuildFile; productRef = 37ED195D2B44D4D800A7CAFF /* ViewExtractor */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		37105E332B23CB5D009FC89F /* XYPlot_DemoApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XYPlot_DemoApp.swift; sourceTree = "<group>"; };
 		37105E342B23CB5D009FC89F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		37105E362B23CB5D009FC89F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		37105E382B23CB5D009FC89F /* XYPlotData+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XYPlotData+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		37105E3A2B23CB5D009FC89F /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		37105E3C2B23CB5D009FC89F /* PlotDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PlotDataModel.xcdatamodel; sourceTree = "<group>"; };
 		37105E3D2B23CB5D009FC89F /* LegendView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegendView.swift; sourceTree = "<group>"; };
 		37105E3E2B23CB5D009FC89F /* PlotLineDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotLineDialog.swift; sourceTree = "<group>"; };
 		37105E3F2B23CB5D009FC89F /* XYPlot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XYPlot.swift; sourceTree = "<group>"; };
-		37105E402B23CB5D009FC89F /* XYPlotData+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XYPlotData+CoreDataClass.swift"; sourceTree = "<group>"; };
 		37105E412B23CB5D009FC89F /* PlotSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotSettingsView.swift; sourceTree = "<group>"; };
-		37105E422B23CB5D009FC89F /* Line+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Line+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		37105E432B23CB5D009FC89F /* Settings+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Settings+CoreDataClass.swift"; sourceTree = "<group>"; };
 		37105E442B23CB5D009FC89F /* AdjustAxis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdjustAxis.swift; sourceTree = "<group>"; };
 		37105E452B23CB5D009FC89F /* XYPlotCoreDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XYPlotCoreDataManager.swift; sourceTree = "<group>"; };
-		37105E462B23CB5D009FC89F /* Line+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Line+CoreDataClass.swift"; sourceTree = "<group>"; };
 		37105E472B23CB5D009FC89F /* PlotPointShapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotPointShapes.swift; sourceTree = "<group>"; };
-		37105E482B23CB5D009FC89F /* Settings+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Settings+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		3735DFE42B10392D00098F82 /* XYPlot-Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "XYPlot-Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3735DFE72B10392D00098F82 /* XYPlot_DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XYPlot_DemoApp.swift; sourceTree = "<group>"; };
 		3735DFE92B10392D00098F82 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -67,7 +54,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37ED195E2B44D4D800A7CAFF /* ViewExtractor in Frameworks */,
 				372C471F2B17C9310084BB21 /* RichTextEditor in Frameworks */,
 				372C471C2B17C9040084BB21 /* NumericTextField in Frameworks */,
 				372C47192B17C8830084BB21 /* Utilities in Frameworks */,
@@ -108,13 +94,7 @@
 				37105E3E2B23CB5D009FC89F /* PlotLineDialog.swift */,
 				374C14B02B44CE5600883A35 /* Debounce.swift */,
 				37105E442B23CB5D009FC89F /* AdjustAxis.swift */,
-				37105E382B23CB5D009FC89F /* XYPlotData+CoreDataProperties.swift */,
-				37105E402B23CB5D009FC89F /* XYPlotData+CoreDataClass.swift */,
-				37105E422B23CB5D009FC89F /* Line+CoreDataProperties.swift */,
-				37105E432B23CB5D009FC89F /* Settings+CoreDataClass.swift */,
 				37105E452B23CB5D009FC89F /* XYPlotCoreDataManager.swift */,
-				37105E462B23CB5D009FC89F /* Line+CoreDataClass.swift */,
-				37105E482B23CB5D009FC89F /* Settings+CoreDataProperties.swift */,
 			);
 			path = XYPlot;
 			sourceTree = "<group>";
@@ -184,7 +164,6 @@
 				372C47182B17C8830084BB21 /* Utilities */,
 				372C471B2B17C9040084BB21 /* NumericTextField */,
 				372C471E2B17C9310084BB21 /* RichTextEditor */,
-				37ED195D2B44D4D800A7CAFF /* ViewExtractor */,
 			);
 			productName = "XYPlot-Demo";
 			productReference = 3735DFE42B10392D00098F82 /* XYPlot-Demo.app */;
@@ -218,7 +197,6 @@
 				372C47172B17C8830084BB21 /* XCRemoteSwiftPackageReference "Utilities" */,
 				372C471A2B17C9040084BB21 /* XCRemoteSwiftPackageReference "NumericTextField" */,
 				372C471D2B17C9310084BB21 /* XCRemoteSwiftPackageReference "RichTextEditor" */,
-				37ED195C2B44D4D800A7CAFF /* XCRemoteSwiftPackageReference "ViewExtractor" */,
 			);
 			productRefGroup = 3735DFE52B10392D00098F82 /* Products */;
 			projectDirPath = "";
@@ -251,15 +229,9 @@
 				373CE8BE2B36242200BDF580 /* PlotSettingsView.swift in Sources */,
 				373CE8BD2B36241600BDF580 /* XYPlot.swift in Sources */,
 				373CE8BC2B3623F900BDF580 /* PlotPointShapes.swift in Sources */,
-				373CE8BB2B3623E400BDF580 /* Line+CoreDataProperties.swift in Sources */,
-				373CE8BA2B3623D400BDF580 /* Line+CoreDataClass.swift in Sources */,
 				373CE8B92B3623BE00BDF580 /* LegendView.swift in Sources */,
-				373CE8B82B36239100BDF580 /* Settings+CoreDataClass.swift in Sources */,
-				37105E5B2B23CB5D009FC89F /* Settings+CoreDataProperties.swift in Sources */,
 				373CE8B72B3615FC00BDF580 /* PlotData.swift in Sources */,
 				374C14B12B44CE5600883A35 /* Debounce.swift in Sources */,
-				37105E4D2B23CB5D009FC89F /* XYPlotData+CoreDataProperties.swift in Sources */,
-				37105E532B23CB5D009FC89F /* XYPlotData+CoreDataClass.swift in Sources */,
 				3735DFE82B10392D00098F82 /* XYPlot_DemoApp.swift in Sources */,
 				37105E512B23CB5D009FC89F /* PlotLineDialog.swift in Sources */,
 				37105E582B23CB5D009FC89F /* XYPlotCoreDataManager.swift in Sources */,
@@ -498,14 +470,6 @@
 				kind = branch;
 			};
 		};
-		37ED195C2B44D4D800A7CAFF /* XCRemoteSwiftPackageReference "ViewExtractor" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/GeorgeElsham/ViewExtractor.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -523,11 +487,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 372C471D2B17C9310084BB21 /* XCRemoteSwiftPackageReference "RichTextEditor" */;
 			productName = RichTextEditor;
-		};
-		37ED195D2B44D4D800A7CAFF /* ViewExtractor */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 37ED195C2B44D4D800A7CAFF /* XCRemoteSwiftPackageReference "ViewExtractor" */;
-			productName = ViewExtractor;
 		};
 /* End XCSwiftPackageProductDependency section */
 

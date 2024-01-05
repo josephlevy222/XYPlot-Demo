@@ -146,14 +146,11 @@ func adjustAxis( _ lower: inout Double, _ upper: inout Double) -> MajorMinor {
 
 extension PlotData {
     
-    mutating
-    public func scaleAxes() {
+    mutating public func scaleAxes() {
         if settings.autoScale { return axesScale() }
-        //return self
     }
     
-    mutating
-    public  func axesScale() {
+    mutating public  func axesScale() {
         var newData = self // new copy (COW)
         // Get X range and Y ranges of all plots
         let hasPrimary = newData.hasPrimaryLines
@@ -241,10 +238,13 @@ extension PlotData {
             if xTics.0 == 0 { xTics = (10,5) }
         }
         // Assign to newData.settings
-        newData.settings.xAxis = AxisParameters(min: xMin, max: xMax, majorTics: xTics.0, minorTics: xTics.1, title: settings.xAxis?.title ?? AttributedString())
-        newData.settings.yAxis = AxisParameters(min: yMin, max: yMax, majorTics: yTics.0, minorTics: yTics.1, title: settings.yAxis?.title ?? AttributedString())
-        newData.settings.sAxis = AxisParameters(min: sMin, max: sMax, majorTics: sTics.0, minorTics: sTics.1, title: settings.sAxis?.title ?? AttributedString())
-        newData.settings.legendPos = self.settings.legendPos
+        newData.settings.xAxis = AxisParameters(min: xMin, max: xMax, majorTics: xTics.0, minorTics: xTics.1, 
+												title: settings.xAxis?.title ?? AttributedString())
+        newData.settings.yAxis = AxisParameters(min: yMin, max: yMax, majorTics: yTics.0, minorTics: yTics.1,
+												title: settings.yAxis?.title ?? AttributedString())
+        newData.settings.sAxis = AxisParameters(min: sMin, max: sMax, majorTics: sTics.0, minorTics: sTics.1, 
+												title: settings.sAxis?.title ?? AttributedString())
+        newData.settings.legendPos = self.settings.legendPos  // is this needed? 
        
         self = newData
     }

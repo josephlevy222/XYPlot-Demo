@@ -7,102 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F220D966-E3A5-40E1-83F5-4426B3CB77C8"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "XYPlot-Demo/XYPlot/Settings+CoreDataProperties.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "159"
-            endingLineNumber = "159"
-            landmarkName = "unknown"
-            landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "B4E060AE-B57E-4FD3-A7EA-7162199D3C34"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "XYPlot-Demo/XYPlot/Settings+CoreDataProperties.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "unknown"
-            landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "9026E039-3AB1-4093-A9C4-3830C73AB48A"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "XYPlot-Demo/XYPlot/Settings+CoreDataProperties.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "158"
-            endingLineNumber = "158"
-            landmarkName = "unknown"
-            landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "89C691EA-68E8-44FA-91C8-E7B38EDD38D8"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "XYPlot-Demo/XYPlot/Settings+CoreDataProperties.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
-            landmarkName = "unknown"
-            landmarkType = "0">
-            <Locations>
-               <Location
-                  uuid = "89C691EA-68E8-44FA-91C8-E7B38EDD38D8 - 43d7355bd63d1aee"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "XYPlot_Demo.PlotSettings.setPublisherActions(Swift.Optional&lt;XYPlot_Demo.Settings&gt;) -&gt; ()"
-                  moduleName = "XYPlot-Demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/josephlevy222/Projects/XYPlot-Demo/XYPlot-Demo/XYPlot/Settings+CoreDataProperties.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "159"
-                  endingLineNumber = "159"
-                  offsetFromSymbolStart = "609">
-               </Location>
-               <Location
-                  uuid = "89C691EA-68E8-44FA-91C8-E7B38EDD38D8 - c0f880ae0c0eec1b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Foundation.AttributedString) -&gt; () in XYPlot_Demo.PlotSettings.setPublisherActions(Swift.Optional&lt;XYPlot_Demo.Settings&gt;) -&gt; ()"
-                  moduleName = "XYPlot-Demo"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/josephlevy222/Projects/XYPlot-Demo/XYPlot-Demo/XYPlot/Settings+CoreDataProperties.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "159"
-                  endingLineNumber = "159"
-                  offsetFromSymbolStart = "102">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "B7C7FC70-ED65-4A00-BCB8-F42A2A6FF6E4"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -110,8 +14,8 @@
             filePath = "XYPlot-Demo/XYPlot/AdjustAxis.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
             landmarkName = "scaleAxes()"
             landmarkType = "7">
          </BreakpointContent>
@@ -126,8 +30,8 @@
             filePath = "XYPlot-Demo/XYPlot/XYPlot.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "455"
-            endingLineNumber = "455"
+            startingLineNumber = "446"
+            endingLineNumber = "446"
             landmarkName = "unknown"
             landmarkType = "0">
             <Locations>
@@ -189,8 +93,8 @@
             filePath = "XYPlot-Demo/XYPlot/XYPlot.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "472"
-            endingLineNumber = "472"
+            startingLineNumber = "463"
+            endingLineNumber = "463"
             landmarkName = "unknown"
             landmarkType = "0">
             <Locations>
@@ -267,8 +171,8 @@
             filePath = "XYPlot-Demo/XYPlot/XYPlot.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "312"
-            endingLineNumber = "312"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
             landmarkName = "body"
             landmarkType = "24">
             <Locations>

@@ -102,11 +102,7 @@ public struct ShapeParameters : Equatable, Codable {
     }
 	
 	enum CodingKeys: CodingKey {
-		case path
-		case angle
-		case filled
-		case color
-		case size
+		case path, angle, filled, color, size
 	}
 	
 	public init(from decoder: Decoder) throws {
@@ -121,11 +117,13 @@ public struct ShapeParameters : Equatable, Codable {
 	
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
-		try container.encode(angle.radians, forKey: .angle)
-		try container.encode(filled, forKey: .filled)
-		try container.encode(color.sARGB, forKey: .color)
-		try container.encode(size, forKey: .size)
-		try container.encode(path(ShapeParameters.unit).description, forKey: .path)
+		do {
+			try container.encode(angle.radians, forKey: .angle)
+			try container.encode(filled, forKey: .filled)
+			try container.encode(color.sARGB, forKey: .color)
+			try container.encode(size, forKey: .size)
+			try container.encode(path(ShapeParameters.unit).description, forKey: .path)
+		} catch (let error) { print(error.localizedDescription) }
 	}
 
 }
@@ -172,21 +170,21 @@ public var pointSymbols : [ShapeView] = [ // Some ShapeView samples
     ShapeView(shape: .init(path: Rectangle().scale(0.707).path, filled: false, color: .red)), // Square
     ShapeView(shape: .init(path: Rectangle().path, filled: false, color: .red, size: 0.707)), // Square
     ShapeView(shape: .init(path: Circle().path, filled: false, color: .blue)),   // Circle
-    ShapeView(shape: .init(path: Polygon(sides: 13).path, filled: false,color: .blue, size: 2.0)),  // Almost Circle from Polygon
+    ShapeView(shape: .init(path: Polygon(sides: 13).path, filled: false,color: .blue, size: 2.0)),//Almost Circle from Polygon
     ShapeView(shape: .init(path: Polygon(sides: 4).path, angle: .degrees(0.0), filled: false,color: .green)),  // Open Diamond
-    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle:  .degrees(90.0), filled: false,color: .purple)),// Open Triangle
-    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle: .degrees(-90.0), filled: false,color: .orange)),// Inverted Triangle
+    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle: .degrees(90.0), filled: false,color: .purple)),//Open Triangle
+    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle: .degrees(-90.0), filled: false,color: .orange)),//Inv Triangle
     ShapeView(shape: .init(path: Polygon(sides: 4, openShape: true).path, filled: false, color: .black)), // Plus
-    ShapeView(shape: .init(path: Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0), filled: false, color: .black)),// X
+    ShapeView(shape: .init(path: Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0),filled: false)), // X
     ShapeView(shape: .init(path: Polygon(sides: 6, openShape: true).path, filled: false, color: .black)), // Asterix
     ShapeView(shape: .init(path: Arrow().path)),
     ShapeView(shape: .init(path: Arrow(left: false).path))
 ]
-
+#if DEBUG
 func makePathFunction(path: Path) -> (CGRect) -> Path {
     { rect in return path.applying(CGAffineTransform(scaleX: rect.width, y: rect.height)) }
 }
-#if DEBUG
+
 struct PlotShapesView_Previews: PreviewProvider {
     static var previews: some View {
         let unit = CGRect(x: 0, y: 0, width: 1, height: 1)
