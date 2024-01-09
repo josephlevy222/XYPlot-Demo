@@ -45,7 +45,7 @@ public struct Polygon : Shape {
         let radius = (cornerStart ? sqrt(rect.width * rect.width + rect.height * rect.height) : rect.width) / 2
         
         // get the angle in radian,
-        // 2 pi divided by the number of sides
+        // 2*pi divided by the number of sides
         let angle = Double.pi * 2 / Double(sides)
         let offset = cornerStart ?  Double.pi/4.0 : 0.0
         var path = Path()
@@ -78,124 +78,122 @@ public struct Polygon : Shape {
     }
 }
 
-public struct ShapeParameters : Equatable, Codable {
-	static let unit = CGRect(origin: .zero, size: CGSize(width: 1.0, height: 1.0))
+fileprivate let unitRect = CGRect(origin: .zero , size: .init(width: 1, height: 1))
+
+public struct PointShape : InsettableShape, Equatable, Codable {
 	
-	public var path: (CGRect) -> Path = Polygon(sides: 4).path
-	public var angle : Angle = .radians(0.0)
-	public var filled: Bool  = false
-	public var color: Color = .black
-	public var size: CGFloat = 1.0
-	
-    public init(path: @escaping (CGRect) -> Path = Polygon(sides: 4).path, angle: Angle = .radians(0.0), filled: Bool = false,
-				color: Color = .black, size: CGFloat = 1.0) {
-		self.path = path
-        self.angle = angle
-        self.filled = filled
-        self.color = color
-        self.size = size
-    }
-    
-    static public func == (lhs: ShapeParameters, rhs: ShapeParameters) -> Bool {
-        lhs.angle == rhs.angle && lhs.filled == rhs.filled &&  rhs.color == lhs.color
-        && lhs.path(unit).description == rhs.path(unit).description && lhs.size == rhs.size // equal paths for equal CGRects
+    public func inset(by amount: CGFloat) -> PointShape {
+        var shape = self
+        shape.insetAmount -= amount
+        return shape
     }
 	
-	enum CodingKeys: CodingKey {
-		case path, angle, filled, color, size
+	public func equalPathandAngle(_ rhs: PointShape) -> Bool {
+		angle == rhs.angle && path(in: unitRect).description == rhs.path(in: unitRect).description
 	}
+    static public func == (lhs: PointShape, rhs: PointShape) -> Bool {
+        lhs.fill == rhs.fill &&  rhs.color == lhs.color && lhs.size == rhs.size
+		&& lhs.equalPathandAngle(rhs) // equal paths for equal CGRects
+    }
+	
+    public typealias InsetShape = PointShape
+
+	public var color = Color.black
+	public var fill = false
+	public var angle = Angle(radians: 0.0)
+    public var insetAmount: CGFloat = 0
+	public var size: CGFloat
+	public var shapePath : Path = Rectangle().path(in: unitRect) // save unitRect Path
+	
+	public init(_ shape: @escaping (CGRect) -> Path = Polygon(sides: 4).path, angle: Angle = .radians(0.0),
+				fill: Bool = false, color: Color = .black, size: CGFloat  = 1.0)  {
+		shapePath = shape(unitRect)
+		self.angle = angle
+		self.fill = fill
+		self.color = color
+		self.size = size
+	}
+	
+	public func path(in rect: CGRect) -> Path {
+		shapePath.path(in: unitRect)
+		         .applying(CGAffineTransform(scaleX: rect.width, y: rect.height)) }
+
+	enum CodingKeys: CodingKey { case color, fill, angle, insetAmount, shapePath, size }
 	
 	public init(from decoder: Decoder) throws {
 		let values = try decoder.container(keyedBy: CodingKeys.self)
-		angle = .radians(try values.decode(Double.self, forKey: .angle))
+		let shape =  try values.decode(String.self, forKey: .shapePath)
+		shapePath =  Path(shape) ?? Polygon(sides: 4, openShape: false, cornerStart: false).path(in: unitRect)
+		insetAmount = try values.decode(CGFloat.self, forKey: .insetAmount)
 		color = Color(sARGB: try values.decode(Int.self, forKey: .color))
-		filled = try values.decode(Bool.self, forKey: .filled)
+		fill = try values.decode(Bool.self, forKey: .fill)
+		angle = Angle(radians: try values.decode(CGFloat.self, forKey: .angle))
 		size = try values.decode(CGFloat.self, forKey: .size)
-		path = { rect in Path((try? values.decode(String.self, forKey: .path)) ?? "")?
-			.applying(CGAffineTransform(scaleX: rect.width, y: rect.height)) ?? Polygon(sides: 4).path(in: rect) }
 	}
 	
 	public func encode(to encoder: Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		do {
-			try container.encode(angle.radians, forKey: .angle)
-			try container.encode(filled, forKey: .filled)
+			try container.encode(shapePath.description, forKey: .shapePath)
+			try container.encode(insetAmount, forKey: .insetAmount)
 			try container.encode(color.sARGB, forKey: .color)
+			try container.encode(fill, forKey: .fill)
+			try container.encode(angle.radians, forKey: .angle)
 			try container.encode(size, forKey: .size)
-			try container.encode(path(ShapeParameters.unit).description, forKey: .path)
-		} catch (let error) { print(error.localizedDescription) }
+		} catch (let error) { print(error.localizedDescription)}
 	}
-
 }
 
-public struct CustomShape : InsettableShape {
-    public func inset(by amount: CGFloat) -> CustomShape {
-        var shape = self
-        shape.insetAmount -= amount
-        return shape
-    }
-    //static private let unit = CGRect(x: 0, y: 0, width: 1, height: 1)
-    public typealias InsetShape = CustomShape
-    
-    public var insetAmount: CGFloat = 0
-    
-    public init(_ shape: @escaping (_ in: CGRect) -> Path) { shapePath = shape(ShapeParameters.unit) }
-    public var shapePath = Rectangle().path(in: ShapeParameters.unit)
-    public func path(in rect: CGRect) -> Path { shapePath.applying(CGAffineTransform(scaleX: rect.width, y: rect.height)) }
-}
-
-public struct ShapeView : View {
-    public var scale: CGFloat {shape.size}
-    public var shape = ShapeParameters()
+public struct PointShapeView : View {
+	public init(shape: PointShape){ self.shape = shape }
+	public init(_ shape: PointShape) { self.shape = shape }
+	public var shape : PointShape
+	private var size : CGSize { CGSize(width: shape.size, height: shape.size)}
+	private var angle: Angle { shape.angle }
     public var body: some View {
         ZStack {
-            CustomShape(shape.path).fill(shape.filled ? shape.color : Color.clear)
-                .rotated(shape.angle).scaleEffect(CGSize(width: scale, height: scale))// anchor is center
-            CustomShape(shape.path).strokeBorder(lineWidth: 2.0/scale).foregroundColor(shape.color)
-                .rotated(shape.angle).scaleEffect(CGSize(width: scale, height: scale))
-        }
+			shape.fill(shape.fill ? shape.color : Color.clear)
+			shape.strokeBorder(lineWidth: 2.0/shape.size).foregroundColor(shape.color)
+		}.rotated(angle).scaleEffect(size)// anchor is center
     }
 }
 
-public var pointSymbols : [ShapeView] = [ // Some ShapeView samples
-    ShapeView(shape: .init(color: .clear)), // None
-    ShapeView(shape: ShapeParameters()), // Default Black Diamond
-    ShapeView(shape: .init(path: Polygon(sides: 4).scale(x: 0.7, y: 1.0).path, color: .red)), // Narrowed Red Diamond
-    ShapeView(shape: .init(path: Rectangle().scale(0.707).path, color: .red)), // Square sized to Polygon Diamond
-    ShapeView(shape: .init(path: Rectangle().path, color: .red, size: 0.707)), // Square sized to Polygon Diamond again
-    ShapeView(shape: .init(path: Circle().path, color: .blue)),   // Circle
-    ShapeView(shape: .init(path: Rectangle().scale(0.707).path, angle: .degrees(45.0), color: .green)), // Diamond from Square
-    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle: .degrees(90.0), color: .purple)), // Triangle
-    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle: .degrees(-90.0), color: .orange)), // Inverted Triangle
-    ShapeView(shape: .init(path: Rectangle().scale(0.707).path, filled: false, color: .red)), // Square
-    ShapeView(shape: .init(path: Rectangle().path, filled: false, color: .red, size: 0.707)), // Square
-    ShapeView(shape: .init(path: Circle().path, filled: false, color: .blue)),   // Circle
-    ShapeView(shape: .init(path: Polygon(sides: 13).path, filled: false,color: .blue, size: 2.0)),//Almost Circle from Polygon
-    ShapeView(shape: .init(path: Polygon(sides: 4).path, angle: .degrees(0.0), filled: false,color: .green)),  // Open Diamond
-    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle: .degrees(90.0), filled: false,color: .purple)),//Open Triangle
-    ShapeView(shape: .init(path: Polygon(sides: 3).path, angle: .degrees(-90.0), filled: false,color: .orange)),//Inv Triangle
-    ShapeView(shape: .init(path: Polygon(sides: 4, openShape: true).path, filled: false, color: .black)), // Plus
-    ShapeView(shape: .init(path: Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0),filled: false)), // X
-    ShapeView(shape: .init(path: Polygon(sides: 6, openShape: true).path, filled: false, color: .black)), // Asterix
-    ShapeView(shape: .init(path: Arrow().path)),
-    ShapeView(shape: .init(path: Arrow(left: false).path))
+public var pointSymbols : [PointShapeView] = [ // Some ShapeView samples
+	PointShapeView(.init(Rectangle().path, color: .clear)), // None
+    PointShapeView(PointShape()), // Default Black Diamond
+	PointShapeView(.init(Polygon(sides: 4).scale(x: 0.7, y: 1.0).path, color: .red)), // Narrowed Red Diamond
+	PointShapeView(.init(Rectangle().path, color: .red, size: 0.7)), // Square sized to Polygon Diamond
+	PointShapeView(.init(Rectangle().scale(0.707).path, color: .red)),// Square sized to Polygon Diamond again
+	PointShapeView(.init(Circle().path, color: .blue)),   // Circle
+    PointShapeView(.init(Rectangle().scale(0.707).path, angle: .degrees(45.0), color: .green)), // Diamond from Square
+    PointShapeView(.init(Polygon(sides: 3).path, angle: .degrees(90.0), color: .purple)), // Triangle
+    PointShapeView(.init(Polygon(sides: 3).path, angle: .degrees(-90.0), color: .orange)), // Inverted Triangle
+    PointShapeView(.init(Rectangle().scale(0.707).path, fill: false, color: .red)), // Square
+	PointShapeView(.init(Rectangle().path, fill: false, color: .red, size: 0.707)), // Square
+    PointShapeView(.init(Circle().path, fill: true, color: .blue)),   // Circle
+    PointShapeView(.init(Polygon(sides: 13).path, fill: false,color: .blue)),//Almost Circle from Polygon
+    PointShapeView(.init(Polygon(sides: 4).path, angle: .degrees(0.0), fill: false,color: .green)),  // Open Diamond
+    PointShapeView(.init(Polygon(sides: 3).path, angle: .degrees(90.0), fill: false,color: .purple)), //Open Triangle
+    PointShapeView(.init(Polygon(sides: 3).path, angle: .degrees(-90.0), fill: false,color: .orange)), //Inverted Triangle
+    PointShapeView(.init(Polygon(sides: 4, openShape: true).path, fill: false, color: .black)), // Plus
+    PointShapeView(.init(Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0),fill: false)), // X
+    PointShapeView(.init(Polygon(sides: 6, openShape: true).path, fill: false, color: .black)), // Asterix
+    PointShapeView(.init(Arrow().path)),
+    PointShapeView(.init(Arrow(left: false).path))
 ]
 #if DEBUG
-func makePathFunction(path: Path) -> (CGRect) -> Path {
-    { rect in return path.applying(CGAffineTransform(scaleX: rect.width, y: rect.height)) }
-}
 
 struct PlotShapesView_Previews: PreviewProvider {
     static var previews: some View {
         let unit = CGRect(x: 0, y: 0, width: 1, height: 1)
-        let pentagonString = Polygon(sides: 5, openShape: false).path(in: unit).description
+        let pentagonString = Polygon(sides: 5, openShape: false).path(in: unitRect).description
         VStack {
             VStack {
                 Text(Rectangle().path(in: unit).description+"\n")
                 Text(Ellipse().path(in: unit).description+"\n")
                 Text(pentagonString)
-                ShapeView(shape: ShapeParameters(path: makePathFunction(path: Path(pentagonString) ?? Rectangle().path(in: unit))))
-                Text(pointSymbols[3].shape.path(unit).description)
+				PointShapeView(.init(Path(pentagonString)?.path ?? Rectangle().path))
+				Text(pointSymbols[3].shape.path(in: unitRect).description)
             }.offset(y: -CGFloat(pointSymbols.count)*10.0)
             HStack {
                 ForEach(pointSymbols.indices, id: \.self){ i in

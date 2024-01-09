@@ -159,14 +159,14 @@ extension PlotLine {
 		line.symbolColor = Int64(pointColor.sARGB)
 		///   - pointShape: point symbol from ShapeParameters
 		//line.symbolShape = pointShape
-		line.symbolFilled = pointShape.filled
-		line.symbolSize = pointShape.size
-		line.symbolShape = pointShape.path(CGRect(origin: .zero, size:  CGSize(width: 1.0, height: 1.0))).description
+		line.symbolFilled = pointShape.fill
+		//line.symbolSize = pointShape.size
+		line.symbolShape = pointShape.path(in: CGRect(origin: .zero, size: CGSize(width: 1, height: 1))).description
 		///   - secondary: true if line should use secondary (right-side) axis
 		line.useRightAxis = secondary
 		///   - legend: optional String of line name;
 		line.lineName = legend
-		line.symbolAngle = pointShape.angle.radians
+		//line.symbolAngle = pointShape.angle.radians
 		PlotData.coreDataManager.save()
 	}
 	
@@ -183,18 +183,19 @@ extension PlotLine {
 		///   - pointColor: point symbol color
 		pointShape.color = Color(sARGB: Int(line.symbolColor))
 		///   - pointShape: point symbol from ShapeParameters
-		pointShape.filled = line.symbolFilled
-		pointShape.size = line.symbolSize
-		pointShape.path = { rect in
-			Path(line.symbolShape ?? "")?
-				.applying(CGAffineTransform(scaleX: rect.width, y: rect.height))
-			?? Polygon(sides: 4).path(in: rect)
-		}
+		pointShape.fill = line.symbolFilled
+		//pointShape.size = line.symbolSize
+		//pointShape = line.symbolShape
+// 		{ rect in
+//			Path(line.symbolShape ?? "")?
+//				.applying(CGAffineTransform(scaleX: rect.width, y: rect.height))
+//			?? Polygon(sides: 4).path(in: rect)
+//		}
 		///   - secondary: true if line should use secondary (right-side) axis
 		secondary = line.useRightAxis
 		///   - legend: optional String of line name;
 		legend = line.lineName
-		pointShape.angle = Angle(radians: line.symbolAngle)
+		//pointShape.angle = Angle(radians: line.symbolAngle)
 	}
 }
 
@@ -231,40 +232,7 @@ extension PlotLine {
 //}
 
 
-func decodeToAttributedString(_ data: Data?) -> AttributedString {
-	guard let data else { return AttributedString("")}
-	if let output = data.attributedString {
-		return output
-	} else {
-		print("Here is the data"); print(data)
-		return AttributedString("Could not decode to AttributedString").setFont(to: .title)
-	}
-}
 
-extension Data {
-	var attributedString : AttributedString? {
-		let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-			.documentType: NSAttributedString.DocumentType.rtfd,
-			.characterEncoding: String.Encoding.utf8
-		]
-		let aString = try? NSAttributedString(data: self,
-											  options: options,
-											  documentAttributes: nil)
-		return aString?.attributedString
-	}
-}
-
-extension AttributedString {
-	var data : Data? {
-		let options: [NSAttributedString.DocumentAttributeKey: Any] = [
-			.documentType: NSAttributedString.DocumentType.rtfd,
-			.characterEncoding: String.Encoding.utf8
-		]
-		let range = NSRange(location: 0, length: characters.count)
-		
-		return try? nsAttributedString.data(from: range, documentAttributes: options)
-	}
-}
 
 //
 //  XYPlotData+CoreDataClass.swift

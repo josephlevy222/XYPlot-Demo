@@ -19,20 +19,6 @@ import SwiftUI
 import Utilities
 import RichTextEditor
 
-fileprivate let defaultHeaderFonts: [Font] = [.largeTitle,.title,.title2,.title3,.headline,.subheadline]
-extension AttributedString {
-	var convertToNSFonts : AttributedString { convertToUIAttributes().attributedString }
-}
-
-extension String {
-	func markdownToAttributed() -> AttributedString {
-		do {
-			return try AttributedString(styledMarkdown: self)
-		} catch {
-			return AttributedString("Error parsing markdown \(error)")
-		}
-	}
-}
 
 extension View {
 	/// Hide or show the view based on a boolean value.
@@ -83,13 +69,15 @@ public struct XYPlotTitle: View {
 				.hidden()
 			
 			RichTextEditor( $text)
-				.frame(width: textSize.width, height: textSize.height).padding(.leading)
+				.frame(width: textSize.width, height: textSize.height)
+				.padding(.leading)
 				.onTapGesture {
 					isPresented = !overlayEdit // don't use popover in overlay mode
 				}
 				.popover(isPresented: $isPresented) {
 					RichTextEditor( $text)
-						.frame(width: textSize.width, height: textSize.height).padding(.leading)
+						.frame(width: textSize.width, height: textSize.height)
+						.padding(.leading)
 				}
 		}
 	}
@@ -162,7 +150,7 @@ public struct XYPlot: View {
 	private var topHeight: CGFloat { lastYLabelHeight/2.0}
 	
 	private let pad : CGFloat = 4 // Make platform dependent?
-	@State var textSize = CGSize.zero
+	
 	public var body: some View {
 		ZStack {
 			VStack(spacing: 0) {
@@ -199,22 +187,22 @@ public struct XYPlot: View {
 								.stroke(.black, lineWidth: max(size.width, size.height)/500.0+0.5)
 							/// Display the plotLines
 							ForEach(lines.indices, id: \.self) { i in
-								let plotLine = lines[i]
-								let line = transform(plotLine: plotLine, size: size)
-								if plotLine.lineColor != .clear {
-									Path { path in path.addLines(line)}
-										.stroke(plotLine.lineColor, style: plotLine.lineStyle)
+								let line: PlotLine = lines[i]
+								if line.lineColor != .clear {
+									Path { path in path.addLines(transform(plotLine: line, size: size))}
+										.stroke(line.lineColor, style: line.lineStyle)
 										.clipShape(Rectangle().size(size)) // don't draw out of bounds
 								}
-								if plotLine.pointColor != .clear { // for efficiency
+								if line.pointColor != .clear { // for efficiency
+									let points = transform(plotLine: line, size: size)
 									ForEach(line.indices, id: \.self) { j in
-										let point = line[j]
+										let point = points[j]
 										let inBounds = 0.0 <= point.x && point.x <= size.width &&
-										0.0 <= point.y && point.y <= size.height
+										               0.0 <= point.y && point.y <= size.height
 										if inBounds {
 											let x0 = size.width/2.0  // offset is from center
 											let y0 = size.height/2.0 // w an h are divided by 2
-											ShapeView(shape: plotLine.pointShape)
+											PointShapeView(shape: lines[i].pointShape)
 												.offset(x: point.x - x0, y: point.y - y0)
 										}
 									}
@@ -295,13 +283,7 @@ public struct XYPlot: View {
 						data.scaleAxes()
 					}
 			}
-			.onChange(of: data, debounceTime: 0.4) { data in
-				let encoder = JSONEncoder()
-				if let name = data.plotName, let data = try? encoder.encode(data) {
-					//debugPrint("Saving to UserDefaults: ",name," onChange")
-					UserDefaults.standard.set(data, forKey: name)
-				} //else { debugPrint("Could not save to UserDefaults: name = \(data.plotName ?? "nil")")}
-			}
+			.onChange(of: data, debounceTime: 0.4) { $0.saveToUserDefaults() }
 		}// end of ZStack
 	}// End of body
 	
@@ -438,7 +420,8 @@ var testSettings  = PlotSettings(
 	title: "# **Also a very very long plot title**".markdownToAttributed(),
 	xAxis: AxisParameters(title: "## Much Longer Horizontal Axis Title".markdownToAttributed()),
 	yAxis: AxisParameters(title: "## Incredibly Long Vertical Axis Title".markdownToAttributed()),
-	sAxis: AxisParameters(title: "### Smaller Font Secondary Axis Title".markdownToAttributed())
+	sAxis: AxisParameters(title: "### Smaller Font Secondary Axis Title".markdownToAttributed()),
+	savePoints: false
 )
 
 public var testPlotLines = {
@@ -457,7 +440,7 @@ public var testPlotLines = {
 		line2.append(PlotPoint(x,y2))
 	}
 	line1.lineColor = .red;
-	line1.pointShape = ShapeParameters(path: Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0), color: .red)
+	line1.pointShape = PointShape(Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0), color: .red)
 	line2.lineColor = .blue
 	line2.lineStyle.dash = [15,5]; line2.lineStyle.lineWidth = 2; line2.secondary = true
 	var plotData = PlotData(plotLines: [line1,line2], settings: testSettings)

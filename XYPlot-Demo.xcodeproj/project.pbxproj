@@ -25,6 +25,7 @@
 		373CE8BE2B36242200BDF580 /* PlotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37105E412B23CB5D009FC89F /* PlotSettingsView.swift */; };
 		374C14B12B44CE5600883A35 /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374C14B02B44CE5600883A35 /* Debounce.swift */; };
 		37BE467F2B39240100BB6D5E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3735DFE92B10392D00098F82 /* ContentView.swift */; };
+		37D156A72B4874E000954371 /* AttributedString+Coding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D156A62B4874E000954371 /* AttributedString+Coding.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +48,7 @@
 		3735DFEE2B10393000098F82 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		373CE8B62B3615FC00BDF580 /* PlotData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlotData.swift; sourceTree = "<group>"; };
 		374C14B02B44CE5600883A35 /* Debounce.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debounce.swift; sourceTree = "<group>"; };
+		37D156A62B4874E000954371 /* AttributedString+Coding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttributedString+Coding.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 				37105E3E2B23CB5D009FC89F /* PlotLineDialog.swift */,
 				374C14B02B44CE5600883A35 /* Debounce.swift */,
 				37105E442B23CB5D009FC89F /* AdjustAxis.swift */,
+				37D156A62B4874E000954371 /* AttributedString+Coding.swift */,
 				37105E452B23CB5D009FC89F /* XYPlotCoreDataManager.swift */,
 			);
 			path = XYPlot;
@@ -233,6 +236,7 @@
 				373CE8B72B3615FC00BDF580 /* PlotData.swift in Sources */,
 				374C14B12B44CE5600883A35 /* Debounce.swift in Sources */,
 				3735DFE82B10392D00098F82 /* XYPlot_DemoApp.swift in Sources */,
+				37D156A72B4874E000954371 /* AttributedString+Coding.swift in Sources */,
 				37105E512B23CB5D009FC89F /* PlotLineDialog.swift in Sources */,
 				37105E582B23CB5D009FC89F /* XYPlotCoreDataManager.swift in Sources */,
 				37105E572B23CB5D009FC89F /* AdjustAxis.swift in Sources */,

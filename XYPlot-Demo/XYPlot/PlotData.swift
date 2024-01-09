@@ -53,10 +53,12 @@ public struct PlotSettings : Equatable, Codable  {
 	public var legendPos = CGPoint(x: 0, y: 0)
 	public var legend = true
 	public var selection : Int?
+	public var savePoints: Bool
 	public init(title: AttributedString = .init(), xAxis: AxisParameters? = nil, yAxis: AxisParameters? = nil,
 				sAxis: AxisParameters? = nil, sizeMinor: Double = 0.005, sizeMajor: Double = 0.01,
 				format: String = "%g", showSecondaryAxis: Bool = false, autoScale: Bool = true,
-				independentTics: Bool = false, legendPos: CGPoint = .zero, legend: Bool = true, selection: Int? = nil ) {
+				independentTics: Bool = false, legendPos: CGPoint = .zero, legend: Bool = true, selection: Int? = nil,
+				savePoints: Bool = true) {
 		self.title = title.convertToNSFonts
 		self.xAxis = xAxis
 		self.yAxis = yAxis
@@ -69,6 +71,7 @@ public struct PlotSettings : Equatable, Codable  {
 		self.independentTics = independentTics
 		self.legendPos = legendPos
 		self.selection = selection
+		self.savePoints = savePoints
 	}
 }
 
@@ -140,8 +143,9 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 		get { Color(sARGB: lineColorInt)}
 		set { lineColorInt = newValue.sARGB }
 	}
+	
 	public var lineStyle: StrokeStyle
-	public var pointShape: ShapeParameters
+	public var pointShape: PointShape
 	public var secondary: Bool
 	public var legend: String?
 	public var pointColor: Color { pointShape.color } // added to ShapeParameters
@@ -159,7 +163,7 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 				lineColor: Color = .black,
 				lineStyle: StrokeStyle = StrokeStyle(lineWidth: 2),
 				pointColor: Color = .clear,
-				pointShape: ShapeParameters = .init(),
+				pointShape: PointShape = .init(),
 				secondary: Bool = false,
 				legend: String? = nil) {
 		self.values = values
@@ -169,7 +173,6 @@ public struct PlotLine : RandomAccessCollection, MutableCollection, Equatable, C
 		self.secondary = secondary
 		self.legend = legend
 		self.pointShape.color = pointColor
-		
 	}
 	
 	/// add array append and clear -- other Array methods can be added similarly
@@ -211,8 +214,14 @@ public struct PlotData : Equatable, Codable {
 	func saveToUserDefaults() {
 		guard let plotName else { return }
 		let encoder = JSONEncoder()
-		if let data = try? encoder.encode(self) {
-			debugPrint("Saving to UserDefaults: \(plotName)")
+		let plotDataToEncode = settings.savePoints ? self
+		: PlotData(plotLines: plotLines.map { plotLine in
+			var newLine = plotLine
+			newLine.clear() // remove PlotLine values
+			return newLine
+		}, settings: settings, plotName: plotName)
+		if let data = try? encoder.encode(plotDataToEncode) {
+			//debugPrint("Saving to UserDefaults: \(plotName)")
 			UserDefaults.standard.set(data, forKey: plotName)
 		} else { debugPrint("Could not save to UserDefaults")}
 	}
@@ -220,23 +229,31 @@ public struct PlotData : Equatable, Codable {
 	func readFromUserDefaults(_ plotName: String) -> PlotData {
 		let decoder = JSONDecoder()
 		if let data = UserDefaults.standard.data(forKey: plotName),
-		   var plotData = try? decoder.decode(PlotData.self, from: data) {
-			plotData.plotName = plotName
-			return plotData
+		   var plotDataFromDecode = try? decoder.decode(PlotData.self, from: data) {
+			if !plotDataFromDecode.settings.savePoints { // Put existing point values in plotLines
+				plotDataFromDecode.plotLines = plotDataFromDecode.plotLines.indices.map { i in
+					var newLine = plotDataFromDecode.plotLines[i]
+					if i < plotLines.count  {
+						newLine.values = plotLines[i].values
+					}
+					return newLine
+				}
+			}
+			return plotDataFromDecode
 		}
 		return PlotData(plotLines: plotLines, settings: settings, plotName: plotName)
+		
 	}
 	
 	static public func == (lhs: PlotData, rhs: PlotData) -> Bool {
-		var equal = rhs.plotLines.count == lhs.plotLines.count && lhs.settings == rhs.settings
-		if equal {
-			for i in rhs.plotLines.indices {
-				equal = lhs.plotLines[i] == rhs.plotLines[i]
-				if !equal { break }
-			}
-		}
-		return equal
-	}
+		rhs.plotLines.count == lhs.plotLines.count && lhs.settings == rhs.settings && rhs.plotLines == lhs.plotLines }
+//		if rhs.plotLines.count == lhs.plotLines.count && lhs.settings == rhs.settings {
+//			for i in rhs.plotLines.indices {
+//				if lhs.plotLines[i] != rhs.plotLines[i] { return false }
+//			}
+//		}
+//		return true
+//	}
 	
 	subscript(_ position: Int) -> PlotLine {
 		get { plotLines[position] }

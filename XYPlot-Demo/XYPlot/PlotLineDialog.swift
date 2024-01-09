@@ -16,9 +16,9 @@ public struct PlotLineDialog: View {
     init(plotData: Binding<PlotData>) { _plotData = plotData }
     @State private var i : Int = 0
     @State private var lineName : String = ""
-    {
-        didSet { plotData.plotLines[self.i].legend = lineName }
-    }
+//    {
+//        didSet { plotData.plotLines[self.i].legend = lineName }
+//    }
     @State private var lineColor : Color = .black
     @State private var lineWidth : CGFloat = 1.0
     @State private var lineStyle : Int = 0
@@ -56,9 +56,9 @@ public struct PlotLineDialog: View {
 #else
                                 .frame(width: 100, height: 1.0)
 #endif
-                            ShapeView(shape: ShapeParameters(path: symbolShapes[pointStyle].path, angle: symbolShapes[pointStyle].angle, filled: pointFill, color: pointColor, size: pointSize))
-                                .offset(x: -25.0, y: 0)
-                            ShapeView(shape: ShapeParameters(path: symbolShapes[pointStyle].path, angle: symbolShapes[pointStyle].angle, filled: pointFill, color: pointColor, size: pointSize))
+							PointShapeView(shape: PointShape( {symbolShapes[pointStyle].path(in: $0)}, angle: symbolShapes[pointStyle].angle, fill: pointFill, color: pointColor))
+								.offset(x: -25.0, y: 0)
+							PointShapeView(shape: PointShape( {symbolShapes[pointStyle].path(in: $0)}, angle: symbolShapes[pointStyle].angle, fill: pointFill, color: pointColor))
                                 .offset(x:  25.0, y: 0)
                         }}
                     HStack { Text("Use with right axis"); Spacer(); CheckBoxView(checked: $useSecondary)}
@@ -112,20 +112,25 @@ public struct PlotLineDialog: View {
                             Spacer()
                             Button(action:  { showDropdown = true }) {
                                 if(pointColor == Color.clear) { Text("None")}
-                                else {
-                                    ShapeView(shape: ShapeParameters(path: symbolShapes[pointStyle].path, angle: symbolShapes[pointStyle].angle, filled: pointFill, color: pointColor, size: pointSize)) }
+								else {
+									PointShapeView(shape: PointShape(symbolShapes[pointStyle].shapePath.path,
+																angle: symbolShapes[pointStyle].angle,
+																fill: pointFill, color: pointColor))
+								}
                             }
                             .popover(isPresented: $showDropdown, attachmentAnchor: .rect(.bounds), arrowEdge: .bottom) {
                                 VStack(spacing: 0) {
                                     ForEach(symbolShapes.indices, id:\.self) { i in
                                         VStack {
                                             Button(action: {
-                                                showDropdown = false
-                                                pointStyle = i
-                                            }) { ShapeView(shape: symbolShapes[i]).padding() }
-                                                .background(Color.white)
-                                                .contentShape(Rectangle())
-                                            Divider()
+												showDropdown = false
+												pointStyle = i
+											}) {
+												PointShapeView(shape: PointShape(symbolShapes[i].path, 
+																			angle: symbolShapes[i].angle))
+												.padding().contentShape(Rectangle()) }
+											.background(Color.white)
+											Divider()
                                         }
                                         .textFieldStyle(.automatic)
                                         .buttonStyle(.plain)
@@ -146,14 +151,16 @@ public struct PlotLineDialog: View {
                         plotLine.lineColor = lineColor
                         plotLine.lineStyle = StrokeStyle(lineWidth: lineWidth, dash: lineStyles[lineStyle])
                         let shape = symbolShapes[pointStyle]
-                        plotLine.pointShape = ShapeParameters(path: shape.path, angle: shape.angle, filled: pointFill, color: pointColor, size: pointSize )
+						plotLine.pointShape = PointShape(shape.path, angle: shape.angle, fill: pointFill,
+														 color: pointColor, size: pointSize )
                         plotLine.legend = lineName
                         plotLine.secondary = useSecondary
 						plotLine.values = plotData.plotLines[i].values
+						
                         plotData.plotLines[i] = plotLine
                         plotData.scaleAxes()
                         dismiss()
-                    }) { Text("Ok").foregroundColor(.accentColor)}
+					}) { Text("Ok").foregroundColor(.accentColor).contentShape(Rectangle())}
                 }.buttonStyle(RoundedCorners(color: .white.opacity(0.1), shadow: 2 ))
             }
             .background(Color.white)
@@ -166,7 +173,7 @@ public struct PlotLineDialog: View {
                 useSecondary = plotLine.secondary
                 if plotLine.lineColor == .clear { 
 					lineOff = true;
-					savedLineColor = (plotLine.pointColor == .clear ? .black : plotLine.pointColor) }  else { lineOff = false }
+					savedLineColor = (plotLine.pointColor == .clear ? .black : plotLine.pointColor) } else { lineOff = false }
                 if plotLine.pointColor == .clear { 
 					pointOff = true;
 					savedPointColor = (plotLine.lineColor == .clear ? .black : plotLine.lineColor) } else { pointOff = false }
@@ -174,30 +181,27 @@ public struct PlotLineDialog: View {
                 pointColor = plotLine.pointColor
                 lineWidth = plotLine.lineStyle.lineWidth
                 lineStyle = lineStyles.firstIndex(of: plotLine.lineStyle.dash ) ?? 0
-                pointStyle = symbolShapes.firstIndex(of: ShapeParameters(path: plotLine.pointShape.path, 
-																		 angle: plotLine.pointShape.angle)) ?? -1
-                if pointStyle == -1 {
-                    symbolShapes.append(ShapeParameters(path: plotLine.pointShape.path, angle: plotLine.pointShape.angle))
-                    print("Adding shape to symbolShapes")
-                    print(plotLine.pointShape.path(CGRect(x: 0, y: 0, width: 1, height: 1)).description)
-                    symbolShapes.forEach { print($0.path(CGRect(x: 0, y: 0, width: 1, height: 1)).description)}
-                    pointStyle = symbolShapes.count-1
-                }
-                pointFill = plotLine.pointShape.filled
+				pointStyle = symbolShapes.firstIndex { $0.equalPathandAngle(plotLine.pointShape) }
+				?? {
+					symbolShapes.append(PointShape(plotLine.pointShape.path, angle: plotLine.pointShape.angle))
+					print("Adding shape to symbolShapes")
+					return symbolShapes.count-1
+				}()
+                pointFill = plotLine.pointShape.fill
                 pointSize = plotLine.pointShape.size
             }
         }
     }
 }
 
-public var symbolShapes : [ShapeParameters] = [ // Default shapes
-    .init(path: Polygon(sides: 4).path), // Diamond
-    .init(path: Polygon(sides: 4).path, angle: .degrees(45.0)),// Square
-    .init(path: Circle().path), // Circle
-    .init(path: Polygon(sides: 3).path, angle: .degrees(-90.0)),// Triangle
-    .init(path: Polygon(sides: 6, openShape: true).path),// Asterix
-    .init(path: Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0)), // X
-    .init(path: Polygon(sides: 4, openShape: true).path) // +
+public var symbolShapes : [PointShape] = [ // Default shapes
+	.init(Polygon(sides: 4).path), // Diamond
+    .init(Polygon(sides: 4).path, angle: .degrees(45.0)),// Square
+    .init(Circle().path), // Circle
+    .init(Polygon(sides: 3).path, angle: .degrees(-90.0)),// Triangle
+    .init(Polygon(sides: 6, openShape: true).path),// Asterix
+    .init(Polygon(sides: 4, openShape: true).path, angle: .degrees(45.0)), // X
+    .init(Polygon(sides: 4, openShape: true).path) // +
 ]
 
 

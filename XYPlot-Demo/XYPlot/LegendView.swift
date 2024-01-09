@@ -17,7 +17,7 @@ public struct LegendView: View {
     
     @ViewBuilder public func arrow(show: Bool, left: Bool = true) -> some View {
         if !data.noSecondary {
-            ShapeView(shape: .init(path: Arrow(left: left).path, color: show ? .black : .white))}
+			PointShapeView(shape: PointShape(Arrow(left: left).path, color: show ? .black : .white))}
         else { EmptyView() }
     }
     
@@ -46,9 +46,9 @@ public struct LegendView: View {
 											#else
                                             .frame(width: 50, height: 1.0) // need at least 1.0 for macOS
 											#endif
-                                        ShapeView(shape: lines[i].pointShape)
+										PointShapeView(shape: lines[i].pointShape)
                                             .offset(x: -10.0, y: 0).frame(height: 1)
-                                        ShapeView(shape: lines[i].pointShape).frame(height: 1)
+										PointShapeView(shape: lines[i].pointShape).frame(height: 1)
                                             .offset(x:  10.0, y: 0)
                                     }
                                 }
